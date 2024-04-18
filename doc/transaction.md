@@ -14,9 +14,10 @@
     "amount": "10000"
   },
   "customer_detail": {
-    "name": "User Name",
-    "email": "username@mail.com",
-    "phone": "0812356789"
+    "customer_id": "USER001",
+    "customer_name": "User Name",
+    "customer_email": "username@mail.com",
+    "customer_phone": "0812356789"
   }
 }
 ```

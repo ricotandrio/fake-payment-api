@@ -5,9 +5,10 @@ export interface CreateTransactionRequest {
     amount: string;
   };
   customer_detail: {
-    name: string;
-    email: string;
-    phone: string;
+    customer_id: string;
+    customer_name: string;
+    customer_email: string;
+    customer_phone: string;
   };
 }
 
