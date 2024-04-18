@@ -10,5 +10,6 @@ export interface CreateTransactionRequest {
     customer_email: string;
     customer_phone: string;
   };
+  token: string;
 }
 

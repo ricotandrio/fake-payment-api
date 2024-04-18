@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_URL")
+}
+
+model Transaction {
+  transaction_id  String @id
+  merchant_id     String
+  currency_symbol String
+  customer_id     String
+
+  transaction_status  String
+  transaction_amount  Float
+  transaction_date    DateTime
+  transaction_updated DateTime
+
+  payment_method String
+
+  merchant          Merchant            @relation(fields: [merchant_id], references: [merchant_id])
+  currency          Currency            @relation(fields: [currency_symbol], references: [currency_symbol])
+  customer          Customer            @relation(fields: [customer_id], references: [customer_id])
+  TransactionHeader TransactionHeader[]
+
+  @@map(name: "transactions")
+}
+
+model TransactionHeader {
+  transaction_id String
+  customer_id    String
+
+  customer    Customer    @relation(fields: [customer_id], references: [customer_id])
+  transaction Transaction @relation(fields: [transaction_id], references: [transaction_id])
+
+  @@id([transaction_id, customer_id])
+  @@map(name: "transaction_headers")
+}
+
+model Merchant {
+  merchant_id      String @id
+  merchant_name    String
+  merchant_email   String
+  merchant_phone   String
+  merchant_address String
+  merchant_country String
+  merchant_fee     Float
+  currency_symbol  String
+
+  transactions Transaction[]
+  currency     Currency      @relation(fields: [currency_symbol], references: [currency_symbol])
+
+  @@map(name: "merchants")
+}
+
+model Customer {
+  customer_id    String @id
+  customer_name  String
+  customer_email String
+  customer_phone String
+
+  transactions        Transaction[]
+  transaction_headers TransactionHeader[]
+
+  @@map(name: "customers")
+}
+
+model Currency {
+  currency_symbol String @id
+  currency_name   String
+
+  transactions Transaction[]
+  Merchant     Merchant[]
+
+  @@map(name: "currencies")
+}

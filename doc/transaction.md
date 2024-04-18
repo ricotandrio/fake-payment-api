@@ -18,7 +18,8 @@
     "customer_name": "User Name",
     "customer_email": "username@mail.com",
     "customer_phone": "0812356789"
-  }
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
 }
 ```
 

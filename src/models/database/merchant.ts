@@ -6,4 +6,5 @@ export type Merchant = {
   merchant_address: string;
   merchant_country: string;
   merchant_fee: number;
+  currency_symbol: string; // not added in database
 };
