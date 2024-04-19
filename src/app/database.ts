@@ -19,7 +19,8 @@ export const prismaClient = new PrismaClient({
       emit: "event",
       level: "warn"
     }
-  ]
+  ],
+  errorFormat: 'pretty',
 });
 
 // @ts-ignore

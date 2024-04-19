@@ -1,5 +1,7 @@
 import express from 'express';
+import { apiRouter } from '../routes/api';
 
-export const app = express();
+export const web = express();
 
-app.use(express.json());
+web.use(express.json());
+web.use(apiRouter);

@@ -1,19 +1,21 @@
 # Token API Spec
 
-## Get Token 
+## Get Token
 
 **Endpoint :** POST /api/token
 
 **Request Body :**
+
 ```json
 {
   "merchant": "mejabelajar_payment",
   "customer_id": "USER001",
-  "password": "userpassword",
+  "password": "userpassword"
 }
 ```
 
 **Response Body (Success):**
+
 ```json
 {
   "code": 201,
@@ -24,10 +26,10 @@
 ```
 
 **Response Body (Failed):**
+
 ```json
 {
   "code": 401,
   "message": "Unauthorized"
 }
 ```
-
