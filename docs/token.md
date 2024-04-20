@@ -8,7 +8,7 @@
 
 ```json
 {
-  "merchant": "mejabelajar_payment",
+  "merchant_id": "mejabelajar.web.app",
   "customer_id": "USER001",
   "password": "userpassword"
 }

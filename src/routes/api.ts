@@ -13,9 +13,8 @@ apiRouter.get('/api/transactions', TransactionController.getAll);
 apiRouter.get('/api/transaction/:id', TransactionController.get);
 
 // QR Code API
-apiRouter.get('/api/qrcode', QrCodeController.get);
+apiRouter.get('/api/qrcode/:transaction_id', QrCodeController.get);
 
 // Token API
 apiRouter.post('/api/token', TokenController.generate);
-apiRouter.get('/api/token/:token', TokenController.validate);
 
