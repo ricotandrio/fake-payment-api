@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CreateTransactionRequest } from '../../models/requests/transaction-request';
+import { CreateTransactionRequest } from '../../models/requests/transaction.request';
 
 const createTransactionZod = z.object({
   payment_type: z.string().min(1),
@@ -10,9 +10,9 @@ const createTransactionZod = z.object({
   customer_detail: z.object({
     customer_id: z.string().min(1),
     customer_name: z.string().min(1),
-    customer_email: z.string().min(1),
-    customer_phone: z.string().min(1)
-  }),
+    customer_email: z.string().email(),
+    customer_phone: z.string().regex(/^[0-9]+$/)
+  }), 
   token: z.string().min(1)
 });
 

@@ -1,5 +1,5 @@
 import { Transaction } from "../database/transaction";
-import { BaseResponse } from "./base-response";
+import { BaseResponse } from "./base.response";
 
 export interface CreateTransactionSuccessResponse extends BaseResponse {
   transaction: Transaction;

@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateTransactionRequest } from "../models/requests/transaction-request";
-import { CreateTransactionFailedResponse, CreateTransactionSuccessResponse } from "../models/responses/transaction-response";
+import { CreateTransactionRequest } from "../models/requests/transaction.request";
+import { CreateTransactionFailedResponse, CreateTransactionSuccessResponse } from "../models/responses/transaction.response";
 import { v4 as uuidv4 } from 'uuid';
 import { validateCreateTransaction } from "../utils/validation/transaction.validation";
-import { TransactionService } from "../services/transaction-service";
+import { TransactionService } from "../services/transaction.service";
 
 export class TransactionController {
 

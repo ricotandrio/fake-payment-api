@@ -1,9 +1,9 @@
-import { CreateTransactionRequest } from "../models/requests/transaction-request";
-import { CreateTransactionSuccessResponse } from "../models/responses/transaction-response";
+import { CreateTransactionRequest } from "../models/requests/transaction.request";
+import { CreateTransactionSuccessResponse } from "../models/responses/transaction.response";
 import { ResponseError } from "../utils/error/response.error";
 import { validateCreateTransaction } from "../utils/validation/transaction.validation";
 import { v4 as uuidv4 } from 'uuid';
-import { TokenService } from "./token-service";
+import { TokenService } from "./token.service";
 
 export class TransactionService {
     

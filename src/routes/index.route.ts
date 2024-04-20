@@ -1,8 +1,8 @@
 import express from 'express';
-import { corsMiddleware } from '../middlewares/cors-middleware';
-import { TransactionController } from '../controllers/transaction-controller';
-import { QrCodeController } from '../controllers/qrcode-controller';
-import { TokenController } from '../controllers/token-controller';
+import { corsMiddleware } from '../middlewares/cors.middleware';
+import { TransactionController } from '../controllers/transaction.controller';
+import { QrCodeController } from '../controllers/qrcode.controller';
+import { TokenController } from '../controllers/token.controller';
 
 export const apiRouter = express.Router();
 apiRouter.use(corsMiddleware);
