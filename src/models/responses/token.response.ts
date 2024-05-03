@@ -1,8 +1,8 @@
+import { Token } from "../database/token";
 import { BaseResponse } from "./base.response";
 
 export interface GetTokenSuccessResponse extends BaseResponse {
-  token: string;
-  expires_in: number;
+  data: Token;
 }
 
 export interface GetTokenFailedResponse extends BaseResponse {}
