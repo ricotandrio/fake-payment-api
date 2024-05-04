@@ -1,12 +1,27 @@
 import { Log } from "./log";
 
+export enum TransactionType {
+  CREDIT = "credit",
+  DEBIT = "debit",
+  TRANSFER = "transfer",
+  QRIS = "qris",
+}
+
+export enum TransactionStatus {
+  PENDING = "pending",
+  SUCCESS = "success",
+  FAILED = "failed",
+}
+
 export interface Transaction extends Log {
   transaction_id: string;
-  transaction_type: "credit" | "debit" | "transfer" | "qris";
+  transaction_type: TransactionType;
   transaction_date: Date;
   transaction_amount: number;
-  transaction_status: "pending" | "success" | "failed";
-  transaction_note: string;
-  transaction_from: string;
+  transaction_status: TransactionStatus;
+  transaction_note?: string;
   user_id: string;
+  merchant_id: string;
+  wallet_id: string;
+  account_id: string;
 }

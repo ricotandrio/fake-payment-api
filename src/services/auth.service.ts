@@ -1,30 +1,21 @@
 import { prismaClient } from "../app/database";
 import { Token } from "../models/database/token";
+import { GetTokenRequest, ValidateTokenRequest } from "../models/requests/token.request";
 import { ResponseError } from "../utils/error/response.error";
 import { v4 } from "uuid";
 
 export class AuthService {
 
-  static async generateToken(user_id: string, client_secret: string): Promise<Token> {
+  static async generateToken(request: GetTokenRequest): Promise<Token> {
 
-    const user = await prismaClient.user.findUnique({
+    const client = await prismaClient.auth.findFirst({
       where: {
-        user_id
+        client_id: request.client_id,
+        client_secret: request.client_secret
       }
     });
 
-    if (!user) {
-      throw new ResponseError(404, "User not found");
-    }
-
-    const clientStatus = await prismaClient.auth.findFirst({
-      where: {
-        client_id: user.client_id,
-        client_secret: client_secret
-      }
-    });
-
-    if (!clientStatus) {
+    if (!client) {
       throw new ResponseError(404, "Client not found");
     }
 
@@ -37,12 +28,13 @@ export class AuthService {
         token_id: token,
         token_type: "access",
         token_exp: expiredTimeOut,
-        user_id: user_id,
+        user_id: request.user_id,
+        client_id: request.client_id,
 
         is_active: true,
         updated_at: new Date(),
-        created_by: user_id,
-        updated_by: user_id,
+        created_by: request.user_id,
+        updated_by: request.user_id,
       }
     });
 
@@ -53,10 +45,11 @@ export class AuthService {
     return insertToken as Token;
   }
 
-  static async validateToken(token: string): Promise<Token> {
+  static async validateToken(request: ValidateTokenRequest): Promise<Token> {
     const tokenData = await prismaClient.token.findUnique({
       where: {
-        token_id: token
+        token_id: request.token,
+        user_id: request.user_id,
       }
     });
 

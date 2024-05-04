@@ -5,4 +5,5 @@ export interface Token extends Log {
   token_type: "access" | "refresh";
   token_exp: Date;
   user_id: string;
+  client_id: string;
 }

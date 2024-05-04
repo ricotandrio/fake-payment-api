@@ -13,64 +13,81 @@ datasource db {
   url      = env("MYSQL_URL")
 }
 
-model Auth {
-  client_id     String @id
-  client_secret String
-  redirect_uri  String
-
-  is_active  Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
-  created_by String
-  updated_by String
-
-  User User[]
+model Merchant {
+  merchant_id      String        @id
+  merchant_name    String
+  merchant_email   String
+  merchant_phone   String
+  merchant_address String
+  merchant_website String
+  merchant_logo    String
+  redirect_url     String
+  is_active        Boolean
+  created_at       DateTime      @default(now())
+  updated_at       DateTime
+  created_by       String
+  updated_by       String
+  transactions     Transaction[]
+  accounts         Account[]
 }
 
-model User {
-  user_id    String @id
-  user_email String @unique
-  user_name  String
-  client_id  String
+model Wallet {
+  wallet_id      String        @id
+  wallet_name    String
+  wallet_balance Float
+  is_active      Boolean
+  created_at     DateTime      @default(now())
+  updated_at     DateTime
+  created_by     String
+  updated_by     String
+  accounts       Account[]
+  Transaction    Transaction[]
+}
 
-  is_active  Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
-  created_by String
-  updated_by String
-
-  Transaction Transaction[]
-  Auth        Auth          @relation(fields: [client_id], references: [client_id])
+model Account {
+  account_id   String        @id
+  account_name String
+  account_type String
+  is_active    Boolean
+  created_at   DateTime      @default(now())
+  updated_at   DateTime
+  created_by   String
+  updated_by   String
+  transactions Transaction[]
+  merchant     Merchant      @relation(fields: [merchant_id], references: [merchant_id])
+  merchant_id  String
+  wallet       Wallet        @relation(fields: [wallet_id], references: [wallet_id])
+  wallet_id    String
 }
 
 model Transaction {
-  transaction_id       String   @id
-  transaction_type     String // qris, transfer, topup, withdraw
-  transaction_date     DateTime
-  transaction_amount   Float
-  transaction_status   String // success, pending, failed
-  transaction_note     String
-  transaction_currency String
-  user_id              String
-
-  is_active  Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
-  created_by String
-  updated_by String
-
-  User User @relation(fields: [user_id], references: [user_id])
+  transaction_id     String   @id
+  transaction_type   String
+  transaction_date   DateTime
+  transaction_amount Float
+  transaction_status String
+  transaction_note   String
+  user_id            String
+  is_active          Boolean
+  created_at         DateTime @default(now())
+  updated_at         DateTime
+  created_by         String
+  updated_by         String
+  merchant           Merchant @relation(fields: [merchant_id], references: [merchant_id])
+  merchant_id        String
+  wallet             Wallet   @relation(fields: [wallet_id], references: [wallet_id])
+  wallet_id          String
+  account            Account  @relation(fields: [account_id], references: [account_id])
+  account_id         String
 }
 
-model Token {
-  token_id   String   @id
-  token_type String // access, refresh
-  token_exp  DateTime
-  user_id    String
-
-  is_active  Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
-  created_by String
-  updated_by String
+model Auth {
+  client_id     String   @id
+  client_secret String
+  apps_name     String
+  is_active     Boolean
+  created_at    DateTime @default(now())
+  updated_at    DateTime
+  created_by    String
+  updated_by    String
 }
