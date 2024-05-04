@@ -1,8 +1,13 @@
 import { BaseResponse } from "./base.response";
 
-export interface GetTokenSuccessResponse extends BaseResponse {
+export interface GetTokenSuccessResponse extends BaseResponse{
   token: string;
-  expires_in: number;
 }
 
 export interface GetTokenFailedResponse extends BaseResponse {}
+
+export interface TokenVerifySuccessResponse extends BaseResponse {
+  user_id: string;
+}
+
+export interface TokenVerifyFailedResponse extends BaseResponse {}

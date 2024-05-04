@@ -1,17 +1,40 @@
-import { Transaction } from "../database/transaction";
+import { TransactionStatus, TransactionType } from "../database/transaction";
 import { BaseResponse } from "./base.response";
 
-export interface CreateTransactionSuccessResponse extends BaseResponse {
-  transaction: Transaction;
-  actions: {
-    name: string;
-    method: string;
-    url: string;
+export interface TransactionSuccessDataResponse {
+  transaction_id: string;
+  transaction_type: TransactionType;
+  transaction_date: Date;
+  transaction_amount: number;
+  transaction_status: TransactionStatus;
+  transaction_note?: string;
+  transaction_currency: string;
+  payment_url?: string;
+  user: {
+    user_id: string;
+    user_email: string;
+    user_name: string;
+  };
+  merchant: {
+    merchant_id: string;
+    merchant_name: string;
+    merchant_email: string;
+    merchant_phone: string;
+    merchant_address: string;
+    merchant_website: string;
+    redirect_uri: string;
   };
 }
 
-export interface TransactionStatusResponse extends BaseResponse {
-  transaction: Transaction;
+export interface TransactionSuccessResponse extends BaseResponse {
+  data: TransactionSuccessDataResponse;
 }
 
-export interface CreateTransactionFailedResponse extends BaseResponse {}
+
+export interface TransactionErrorResponse extends BaseResponse {}
+
+export interface TransactionUpdateSuccessResponse extends BaseResponse {
+  data: TransactionSuccessDataResponse;
+}
+
+export interface TransactionUpdateErrorResponse extends BaseResponse {}

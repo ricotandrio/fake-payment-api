@@ -1,15 +1,21 @@
+import { TransactionType } from "../database/transaction";
+
 export interface CreateTransactionRequest {
-  payment_type: string;
-  transaction_detail: {
-    order_id: string;
-    amount: string;
+  transaction_type: TransactionType;
+  transaction_date: Date;
+  transaction_amount: number;
+  transaction_note?: string;
+  transaction_currency: string;
+  user: {
+    user_id: string;
+    user_email: string;
+    user_name: string;
   };
-  customer_detail: {
-    customer_id: string;
-    customer_name: string;
-    customer_email: string;
-    customer_phone: string;
-  };
+  merchant_id: string;
   token: string;
 }
 
+export interface UpdateTransactionRequest {
+  transaction_id: string;
+  status: string;
+}
