@@ -2,11 +2,12 @@ import { prismaClient } from "../app/database";
 import { logger } from "../app/logging";
 import { JWT_SECRET } from "../app/web";
 import { ResponseError } from "../utils/error/response.error";
+import { Response } from "express";
 import jwt from "jsonwebtoken";
 
 export class TokenService {
 
-  static async get(authorization: string, user_id: string): Promise<string> {
+  static async get(authorization: string, res: Response): Promise<string> {
     const client = authorization.replace("Basic ", "");
     const [client_id, client_secret] = client.split(":");
 
@@ -21,18 +22,39 @@ export class TokenService {
       throw new ResponseError(401, "Unauthorized");
     }
 
-    const token = jwt.sign({ user_id }, JWT_SECRET!, { expiresIn: "2h" });
+    const token = jwt.sign({ client_id }, JWT_SECRET!, { expiresIn: "24h" });
+    res.cookie("token", token, { maxAge: 24 * 60 * 60, httpOnly: true });
 
     return token;
   }
 
-  static async verify(token: string, user_id: string): Promise<string> {
-    const decoded = jwt.verify(token, JWT_SECRET!) as { user_id: string };
+  static async verify(token: string): Promise<string> {
+    const decoded = jwt.verify(token, JWT_SECRET!) as { client_id: string, exp: number };
 
-    if(decoded.user_id !== user_id) {
-      throw new ResponseError(401, "Unauthorized");
+    if(!decoded) {
+      return "";
     }
 
-    return decoded.user_id;
+    const auth = await prismaClient.auth.findFirst({
+      where: {
+        client_id: decoded.client_id
+      }
+    });
+
+    if(!auth) {
+      return "";
+    }
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+
+    if(decoded.exp < currentTime) {
+      return "";
+    }
+
+    return decoded.client_id;
+  }
+
+  static async clearCookie(res: Response): Promise<void> {
+    res.clearCookie("token");
   }
 }

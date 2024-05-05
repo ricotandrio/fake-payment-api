@@ -1,11 +1,12 @@
+import Cookies from "js-cookie";
 import { prismaClient } from "../src/app/database";
 
-export class CleaningTest {
+export class UtilTest {
 
   static TEMPLATE_UUID = [
-    "6ca18406-629c-4ed4-8e26-9ff338041dfc",
+    "6ca18406-629c-4ed4-9e26-9ff338041dfe",
     "6ca18406-629c-4ed4-8e26-9ff338041dfd",
-    "6ca18406-629c-4ed4-8e26-9ff338041dfe",
+    "6ca18406-629c-4ed4-8e26-9ff338041efe",
     "6ca18406-629c-4ed4-8e26-9ff338041dff",
     "6ca18406-629c-4ed4-8e26-9ff338041d00",
     "6ca18406-629c-4ed4-8e26-9ff338041d01",
@@ -17,84 +18,135 @@ export class CleaningTest {
 
   static async delete() {
 
-    // Delete Merchant
-    await prismaClient.merchant.deleteMany({
-      where: {
-        merchant_id: {
-          in: [
-            this.TEMPLATE_UUID[3],
-            this.TEMPLATE_UUID[4]
-          ]
-        }
-      }
-    });
-
-    // Delete Account
-    await prismaClient.account.deleteMany({
+    // Delete Transaction
+    const transactionsExist = await prismaClient.transaction.findMany({
       where: {
         account_id: {
-          in: [
-            "123456",
-            "08123456789"
-          ]
+          in: ["123456", "08123456789"]
         }
       }
     });
 
-    // Delete Wallet
-    await prismaClient.wallet.deleteMany({
-      where: {
-        wallet_id: {
-          in: [
-            this.TEMPLATE_UUID[5],
-            this.TEMPLATE_UUID[6]
-          ]
+    if (transactionsExist.length > 0) {
+      await prismaClient.transaction.deleteMany({
+        where: {
+          account_id: {
+            in: ["123456", "08123456789"]
+          }
         }
-      }
-    });
+      });
+    }
 
     // Delete Auth
-    await prismaClient.auth.delete({
+    const authExists = await prismaClient.auth.findUnique({
       where: {
-        client_id: this.TEMPLATE_UUID[0],
-        client_secret: this.TEMPLATE_UUID[1]
+        client_id: this.TEMPLATE_UUID[0]
       }
     });
 
+    if (authExists) {
+      await prismaClient.auth.delete({
+        where: {
+          client_id: this.TEMPLATE_UUID[0]
+        }
+      });
+    }
+    
+    // Delete Account
+    const accountsExist = await prismaClient.account.findMany({
+      where: {
+        account_id: {
+          in: ["123456", "08123456789"]
+        }
+      }
+    });
+
+    if (accountsExist.length > 0) {
+      await prismaClient.account.deleteMany({
+        where: {
+          account_id: {
+            in: ["123456", "08123456789"]
+          }
+        }
+      });
+    }
+
+    // Delete Merchant
+    const merchantsExist = await prismaClient.merchant.findMany({
+      where: {
+        merchant_id: {
+          in: [this.TEMPLATE_UUID[3], this.TEMPLATE_UUID[4]]
+        }
+      }
+    });
+
+    if (merchantsExist.length > 0) {
+      await prismaClient.merchant.deleteMany({
+        where: {
+          merchant_id: {
+            in: [this.TEMPLATE_UUID[3], this.TEMPLATE_UUID[4]]
+          }
+        }
+      });
+    }
+
+    // Delete Wallet
+    const walletsExist = await prismaClient.wallet.findMany({
+      where: {
+        wallet_id: {
+          in: [this.TEMPLATE_UUID[5], this.TEMPLATE_UUID[6]]
+        }
+      }
+    });
+
+    if (walletsExist.length > 0) {
+      await prismaClient.wallet.deleteMany({
+        where: {
+          wallet_id: {
+            in: [this.TEMPLATE_UUID[5], this.TEMPLATE_UUID[6]]
+          }
+        }
+      });
+    }
+
+  }
+
+  static async deleteAll() {
+    await prismaClient.transaction.deleteMany();
+    await prismaClient.auth.deleteMany();
+    await prismaClient.account.deleteMany();
+    await prismaClient.merchant.deleteMany();
+    await prismaClient.wallet.deleteMany();
   }
 
   static async insert() {
 
+    // Insert Auth
+    this.createAuth();
+
     // Insert Merchant
-    await prismaClient.merchant.createMany({
+    this.createMerchant();
+
+    // Insert Wallet
+    await prismaClient.wallet.createMany({
       data: [
         {
-          merchant_id: this.TEMPLATE_UUID[3],
-          merchant_name: "Digital Bank",
-          merchant_email: "payment@digitalbank.com",
-          merchant_phone: "08123456789",
-          merchant_address: "Street 1, Konoha Village",
-          merchant_website: "https://digitalbank.com",
-          merchant_logo: "https://digitalbank.com/logo",
-          redirect_url: "https://digitalbank.com/redirect",
+          wallet_id: this.TEMPLATE_UUID[5],
+          wallet_name: "Digital Bank Account",
+          wallet_balance: 1000000,
           is_active: true,
           updated_at: new Date(),
           created_by: "Digital Bank",
           updated_by: "Digital Bank"
         },
         {
-          merchant_id: this.TEMPLATE_UUID[4],
-          merchant_name: "Tech Solutions",
-          merchant_email: "info@techsolutions.com",
-          merchant_phone: "0987654321",
-          merchant_address: "Main Street, Central City",
-          merchant_website: "https://techsolutions.com",
-          merchant_logo: "https://techsolutions.com/logo",
-          redirect_url: "https://techsolutions.com/redirect",
+          wallet_id: this.TEMPLATE_UUID[6],
+          wallet_name: "Tech Solutions eWallet",
+          wallet_balance: 500000,
           is_active: true,
           updated_at: new Date(),
           created_by: "Tech Solutions",
-          updated_by: "Tech Solutions",
+          updated_by: "Tech Solutions"
         }
       ],
       skipDuplicates: true
@@ -128,33 +180,10 @@ export class CleaningTest {
       ],
       skipDuplicates: true
     });
+ 
+  }
 
-    // Insert Wallet
-    await prismaClient.wallet.createMany({
-      data: [
-        {
-          wallet_id: this.TEMPLATE_UUID[5],
-          wallet_name: "Digital Bank Account",
-          wallet_balance: 1000000,
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Digital Bank",
-          updated_by: "Digital Bank"
-        },
-        {
-          wallet_id: this.TEMPLATE_UUID[6],
-          wallet_name: "Tech Solutions eWallet",
-          wallet_balance: 500000,
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Tech Solutions",
-          updated_by: "Tech Solutions"
-        }
-      ],
-      skipDuplicates: true
-    });
-
-    // Insert Auth
+  static async createAuth() {
     await prismaClient.auth.create({
       data: {
         client_id: this.TEMPLATE_UUID[0],
@@ -165,6 +194,42 @@ export class CleaningTest {
         created_by: "Meja Belajar",
         updated_by: "Meja Belajar"
       }
+    });
+  }
+
+  static async createMerchant() {
+    await prismaClient.merchant.createMany({
+      data: [
+        {
+          merchant_id: this.TEMPLATE_UUID[3],
+          merchant_name: "Digital Bank",
+          merchant_email: "payment@digitalbank.com",
+          merchant_phone: "08123456789",
+          merchant_address: "Street 1, Konoha Village",
+          merchant_website: "https://digitalbank.com",
+          merchant_logo: "https://digitalbank.com/logo",
+          redirect_url: "https://digitalbank.com/redirect",
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Digital Bank",
+          updated_by: "Digital Bank"
+        },
+        {
+          merchant_id: this.TEMPLATE_UUID[4],
+          merchant_name: "Tech Solutions",
+          merchant_email: "info@techsolutions.com",
+          merchant_phone: "0987654321",
+          merchant_address: "Main Street, Central City",
+          merchant_website: "https://techsolutions.com",
+          merchant_logo: "https://techsolutions.com/logo",
+          redirect_url: "https://techsolutions.com/redirect",
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Tech Solutions",
+          updated_by: "Tech Solutions",
+        }
+      ],
+      skipDuplicates: true
     });
   }
 }

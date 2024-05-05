@@ -1,20 +1,15 @@
 import { TransactionStatus, TransactionType } from "../database/transaction";
 import { BaseResponse } from "./base.response";
 
-export interface TransactionSuccessDataResponse {
+export interface TransactionDTO {
   transaction_id: string;
   transaction_type: TransactionType;
   transaction_date: Date;
   transaction_amount: number;
   transaction_status: TransactionStatus;
   transaction_note?: string;
-  transaction_currency: string;
   payment_url?: string;
-  user: {
-    user_id: string;
-    user_email: string;
-    user_name: string;
-  };
+  user_id: string;
   merchant: {
     merchant_id: string;
     merchant_name: string;
@@ -22,19 +17,18 @@ export interface TransactionSuccessDataResponse {
     merchant_phone: string;
     merchant_address: string;
     merchant_website: string;
-    redirect_uri: string;
   };
 }
 
-export interface TransactionSuccessResponse extends BaseResponse {
-  data: TransactionSuccessDataResponse;
+export interface CreateTransactionSuccessResponse extends BaseResponse {
+  data: TransactionDTO;
 }
 
+export interface CreateTransactionFailedResponse extends BaseResponse {}
 
-export interface TransactionErrorResponse extends BaseResponse {}
-
-export interface TransactionUpdateSuccessResponse extends BaseResponse {
-  data: TransactionSuccessDataResponse;
+export interface UpdateTransactionSuccessResponse extends BaseResponse {
+  data: TransactionDTO;
 }
 
-export interface TransactionUpdateErrorResponse extends BaseResponse {}
+export interface UpdateTransactionFailedResponse extends BaseResponse {}
+
