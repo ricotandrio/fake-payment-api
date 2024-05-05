@@ -1,23 +1,23 @@
 import supertest from "supertest";
-import { CleaningTest } from "./test-util";
+import { UtilTest } from "./test-util";
 import { web } from "../src/app/web";
 import Cookies from "js-cookie";
 
 describe("POST /auth/token", () => {
   beforeAll(async () => {
-    await CleaningTest.insert();
+    await UtilTest.insert();
   });
   
   afterAll(async () => {
     Cookies.remove("token");
-    await CleaningTest.delete();
+    await UtilTest.delete();
   });
 
   it('should return 200 OK', async () => {
 
     const response = await supertest(web)
       .post('/auth/token')
-      .set("Authorization", `Basic ${CleaningTest.TEMPLATE_UUID[0]}:${CleaningTest.TEMPLATE_UUID[1]}`)
+      .set("Authorization", `Basic ${UtilTest.TEMPLATE_UUID[0]}:${UtilTest.TEMPLATE_UUID[1]}`)
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("token");
@@ -27,7 +27,7 @@ describe("POST /auth/token", () => {
   it('should return 401', async () => {
     const response = await supertest(web)
     .post('/auth/token')
-    .set("Authorization", `Basic invalid_client_id:${CleaningTest.TEMPLATE_UUID[1]}`)
+    .set("Authorization", `Basic invalid_client_id:${UtilTest.TEMPLATE_UUID[1]}`)
   
     expect(response.status).toBe(401);
     expect(response.header["set-cookie"]).toBeUndefined();

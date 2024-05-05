@@ -1,7 +1,7 @@
 import { TransactionStatus, TransactionType } from "../database/transaction";
 import { BaseResponse } from "./base.response";
 
-export interface CreateTransactionDTO {
+export interface TransactionDTO {
   transaction_id: string;
   transaction_type: TransactionType;
   transaction_date: Date;
@@ -21,8 +21,14 @@ export interface CreateTransactionDTO {
 }
 
 export interface CreateTransactionSuccessResponse extends BaseResponse {
-  data: CreateTransactionDTO;
+  data: TransactionDTO;
 }
 
-export interface GetTransactionFailedResponse extends BaseResponse {  }
+export interface CreateTransactionFailedResponse extends BaseResponse {}
+
+export interface UpdateTransactionSuccessResponse extends BaseResponse {
+  data: TransactionDTO;
+}
+
+export interface UpdateTransactionFailedResponse extends BaseResponse {}
 

@@ -1,22 +1,22 @@
 import supertest from "supertest";
-import { CleaningTest } from "./test-util";
+import { UtilTest } from "./test-util";
 import { web } from "../src/app/web";
 import Cookies from "js-cookie";
 
 describe('POST /transaction', () => {
   beforeEach(async () => {
-    await CleaningTest.insert();
+    await UtilTest.insert();
   });
   
   afterEach(async () => {
     Cookies.remove("token");
-    await CleaningTest.delete();
+    await UtilTest.delete();
   });
 
   it('should return 201', async () => {
     const token = await supertest(web)
       .post('/auth/token')
-      .set("Authorization", `Basic ${CleaningTest.TEMPLATE_UUID[0]}:${CleaningTest.TEMPLATE_UUID[1]}`)
+      .set("Authorization", `Basic ${UtilTest.TEMPLATE_UUID[0]}:${UtilTest.TEMPLATE_UUID[1]}`)
     
     const response = await supertest(web).post('/transaction')
       .send({
@@ -25,7 +25,7 @@ describe('POST /transaction', () => {
         "transaction_amount": 1000,
         "transaction_note": "Test Transaction",
         "user": {
-          "user_id": CleaningTest.TEMPLATE_UUID[2],
+          "user_id": UtilTest.TEMPLATE_UUID[2],
           "user_email": "usertest@mail.com",
           "user_name": "User Test"
         },

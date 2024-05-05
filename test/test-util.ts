@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { prismaClient } from "../src/app/database";
 
-export class CleaningTest {
+export class UtilTest {
 
   static TEMPLATE_UUID = [
     "6ca18406-629c-4ed4-9e26-9ff338041dfe",
@@ -122,52 +122,10 @@ export class CleaningTest {
   static async insert() {
 
     // Insert Auth
-    await prismaClient.auth.create({
-      data: {
-        client_id: this.TEMPLATE_UUID[0],
-        client_secret: this.TEMPLATE_UUID[1],
-        apps_name: "Meja Belajar",
-        is_active: true,
-        updated_at: new Date(),
-        created_by: "Meja Belajar",
-        updated_by: "Meja Belajar"
-      }
-    });
+    this.createAuth();
 
     // Insert Merchant
-    await prismaClient.merchant.createMany({
-      data: [
-        {
-          merchant_id: this.TEMPLATE_UUID[3],
-          merchant_name: "Digital Bank",
-          merchant_email: "payment@digitalbank.com",
-          merchant_phone: "08123456789",
-          merchant_address: "Street 1, Konoha Village",
-          merchant_website: "https://digitalbank.com",
-          merchant_logo: "https://digitalbank.com/logo",
-          redirect_url: "https://digitalbank.com/redirect",
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Digital Bank",
-          updated_by: "Digital Bank"
-        },
-        {
-          merchant_id: this.TEMPLATE_UUID[4],
-          merchant_name: "Tech Solutions",
-          merchant_email: "info@techsolutions.com",
-          merchant_phone: "0987654321",
-          merchant_address: "Main Street, Central City",
-          merchant_website: "https://techsolutions.com",
-          merchant_logo: "https://techsolutions.com/logo",
-          redirect_url: "https://techsolutions.com/redirect",
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Tech Solutions",
-          updated_by: "Tech Solutions",
-        }
-      ],
-      skipDuplicates: true
-    });
+    this.createMerchant();
 
     // Insert Wallet
     await prismaClient.wallet.createMany({
@@ -225,4 +183,53 @@ export class CleaningTest {
  
   }
 
+  static async createAuth() {
+    await prismaClient.auth.create({
+      data: {
+        client_id: this.TEMPLATE_UUID[0],
+        client_secret: this.TEMPLATE_UUID[1],
+        apps_name: "Meja Belajar",
+        is_active: true,
+        updated_at: new Date(),
+        created_by: "Meja Belajar",
+        updated_by: "Meja Belajar"
+      }
+    });
+  }
+
+  static async createMerchant() {
+    await prismaClient.merchant.createMany({
+      data: [
+        {
+          merchant_id: this.TEMPLATE_UUID[3],
+          merchant_name: "Digital Bank",
+          merchant_email: "payment@digitalbank.com",
+          merchant_phone: "08123456789",
+          merchant_address: "Street 1, Konoha Village",
+          merchant_website: "https://digitalbank.com",
+          merchant_logo: "https://digitalbank.com/logo",
+          redirect_url: "https://digitalbank.com/redirect",
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Digital Bank",
+          updated_by: "Digital Bank"
+        },
+        {
+          merchant_id: this.TEMPLATE_UUID[4],
+          merchant_name: "Tech Solutions",
+          merchant_email: "info@techsolutions.com",
+          merchant_phone: "0987654321",
+          merchant_address: "Main Street, Central City",
+          merchant_website: "https://techsolutions.com",
+          merchant_logo: "https://techsolutions.com/logo",
+          redirect_url: "https://techsolutions.com/redirect",
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Tech Solutions",
+          updated_by: "Tech Solutions",
+        }
+      ],
+      skipDuplicates: true
+    });
+  }
 }
