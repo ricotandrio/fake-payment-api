@@ -21,7 +21,6 @@ export interface Transaction extends Log {
   transaction_status: TransactionStatus;
   transaction_note?: string;
   user_id: string;
-  merchant_id: string;
-  wallet_id: string;
   account_id: string;
+  client_id: string;
 }

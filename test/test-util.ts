@@ -1,11 +1,12 @@
+import Cookies from "js-cookie";
 import { prismaClient } from "../src/app/database";
 
 export class CleaningTest {
 
   static TEMPLATE_UUID = [
-    "6ca18406-629c-4ed4-8e26-9ff338041dfc",
-    "6ca18406-629c-4ed4-8e26-9ff338041dfd",
     "6ca18406-629c-4ed4-8e26-9ff338041dfe",
+    "6ca18406-629c-4ed4-8e26-9ff338041dfd",
+    "6ca18406-629c-4ed4-8e26-9ff338041efe",
     "6ca18406-629c-4ed4-8e26-9ff338041dff",
     "6ca18406-629c-4ed4-8e26-9ff338041d00",
     "6ca18406-629c-4ed4-8e26-9ff338041d01",
@@ -17,18 +18,18 @@ export class CleaningTest {
 
   static async delete() {
 
-    // Delete Merchant
-    await prismaClient.merchant.deleteMany({
+    // Delete Transaction
+    await prismaClient.transaction.deleteMany({
       where: {
-        merchant_id: {
+        account_id: {
           in: [
-            this.TEMPLATE_UUID[3],
-            this.TEMPLATE_UUID[4]
+            "123456",
+            "08123456789"
           ]
         }
       }
     });
-
+ 
     // Delete Account
     await prismaClient.account.deleteMany({
       where: {
@@ -36,6 +37,18 @@ export class CleaningTest {
           in: [
             "123456",
             "08123456789"
+          ]
+        }
+      }
+    });
+
+    // Delete Merchant
+    await prismaClient.merchant.deleteMany({
+      where: {
+        merchant_id: {
+          in: [
+            this.TEMPLATE_UUID[3],
+            this.TEMPLATE_UUID[4]
           ]
         }
       }
@@ -56,8 +69,7 @@ export class CleaningTest {
     // Delete Auth
     await prismaClient.auth.delete({
       where: {
-        client_id: this.TEMPLATE_UUID[0],
-        client_secret: this.TEMPLATE_UUID[1]
+        client_id: this.TEMPLATE_UUID[0]
       }
     });
 
@@ -100,35 +112,6 @@ export class CleaningTest {
       skipDuplicates: true
     });
 
-    // Insert Account
-    await prismaClient.account.createMany({
-      data: [
-        {
-          account_id: "123456",
-          account_name: "Digital Bank Account",
-          account_type: "BANK",
-          merchant_id: this.TEMPLATE_UUID[3],
-          wallet_id: this.TEMPLATE_UUID[5],
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Digital Bank",
-          updated_by: "Digital Bank"
-        },
-        {
-          account_id: "08123456789",
-          account_name: "Tech Solutions e-Wallet",
-          account_type: "EWALLET",
-          merchant_id: this.TEMPLATE_UUID[4],
-          wallet_id: this.TEMPLATE_UUID[6],
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Tech Solutions",
-          updated_by: "Tech Solutions"
-        }
-      ],
-      skipDuplicates: true
-    });
-
     // Insert Wallet
     await prismaClient.wallet.createMany({
       data: [
@@ -166,5 +149,46 @@ export class CleaningTest {
         updated_by: "Meja Belajar"
       }
     });
+
+    // Insert Account
+    await prismaClient.account.createMany({
+      data: [
+        {
+          account_id: "123456",
+          account_name: "Digital Bank Account",
+          account_type: "BANK",
+          merchant_id: this.TEMPLATE_UUID[3],
+          wallet_id: this.TEMPLATE_UUID[5],
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Digital Bank",
+          updated_by: "Digital Bank"
+        },
+        {
+          account_id: "08123456789",
+          account_name: "Tech Solutions e-Wallet",
+          account_type: "EWALLET",
+          merchant_id: this.TEMPLATE_UUID[4],
+          wallet_id: this.TEMPLATE_UUID[6],
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Tech Solutions",
+          updated_by: "Tech Solutions"
+        }
+      ],
+      skipDuplicates: true
+    });
+ 
   }
+
+  static async cleaningBefore() {
+    Cookies.remove("token");
+    await this.insert();
+  }
+
+  static async cleaningAfter() {
+    Cookies.remove("token");
+    await this.delete();
+  }
+
 }

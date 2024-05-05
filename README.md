@@ -8,19 +8,10 @@ Explore the documentation for detailed information on each endpoint:
 2. [Transaction](https://github.com/ricotandrio/fake-payment-gateway-api/blob/master/docs/transaction.md)
 3. [QR Code](https://github.com/ricotandrio/fake-payment-gateway-api/blob/master/docs/qrcode.md)
 
-## Installation
-To run this API, clone this repository to your local machine and install all dependencies used by this API:
+## Testing
+To run Jest unit tests with a specific test file, you can replace --pathToTestFile with the path of the test file.
 
 ```bash
-git clone https://github.com/ricotandrio/fake-payment-gateway-api.git
-
-cd fake-payment-gateway-api
-
-npm install 
+npm t --pathToTestFile
 ```
 
-Run this API by using the following command:
-
-```bash
-node ./src/app/web.app.ts
-```

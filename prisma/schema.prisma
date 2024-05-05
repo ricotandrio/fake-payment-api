@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Merchant {
-  merchant_id      String        @id
+  merchant_id      String    @id
   merchant_name    String
   merchant_email   String
   merchant_phone   String
@@ -23,25 +23,27 @@ model Merchant {
   merchant_logo    String
   redirect_url     String
   is_active        Boolean
-  created_at       DateTime      @default(now())
+  created_at       DateTime  @default(now())
   updated_at       DateTime
   created_by       String
   updated_by       String
-  transactions     Transaction[]
   accounts         Account[]
+
+  @@map("merchants")
 }
 
 model Wallet {
-  wallet_id      String        @id
+  wallet_id      String    @id
   wallet_name    String
   wallet_balance Float
   is_active      Boolean
-  created_at     DateTime      @default(now())
+  created_at     DateTime  @default(now())
   updated_at     DateTime
   created_by     String
   updated_by     String
   accounts       Account[]
-  Transaction    Transaction[]
+
+  @@map("wallets")
 }
 
 model Account {
@@ -58,36 +60,41 @@ model Account {
   merchant_id  String
   wallet       Wallet        @relation(fields: [wallet_id], references: [wallet_id])
   wallet_id    String
+
+  @@map("accounts")
 }
 
 model Transaction {
   transaction_id     String   @id
-  transaction_type   String
+  transaction_type   String // credit, debit, transfer, qris
   transaction_date   DateTime
   transaction_amount Float
-  transaction_status String
-  transaction_note   String
+  transaction_status String // pending, success, failed
+  transaction_note   String?
   user_id            String
   is_active          Boolean
   created_at         DateTime @default(now())
   updated_at         DateTime
   created_by         String
   updated_by         String
-  merchant           Merchant @relation(fields: [merchant_id], references: [merchant_id])
-  merchant_id        String
-  wallet             Wallet   @relation(fields: [wallet_id], references: [wallet_id])
-  wallet_id          String
   account            Account  @relation(fields: [account_id], references: [account_id])
   account_id         String
+  Auth               Auth     @relation(fields: [client_id], references: [client_id])
+  client_id          String
+
+  @@map("transactions")
 }
 
 model Auth {
-  client_id     String   @id
+  client_id     String        @id
   client_secret String
   apps_name     String
   is_active     Boolean
-  created_at    DateTime @default(now())
+  created_at    DateTime      @default(now())
   updated_at    DateTime
   created_by    String
   updated_by    String
+  transactions  Transaction[]
+
+  @@map("auths")
 }
