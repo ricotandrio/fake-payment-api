@@ -1,20 +1,23 @@
 import supertest from "supertest";
-
 import { CleaningTest } from "./test-util";
 import { web } from "../src/app/web";
 import Cookies from "js-cookie";
 
 describe('POST /transaction', () => {
   beforeEach(async () => {
-    await CleaningTest.cleaningBefore();
+    await CleaningTest.insert();
   });
-
+  
   afterEach(async () => {
-    await CleaningTest.cleaningAfter();
+    Cookies.remove("token");
+    await CleaningTest.delete();
   });
 
   it('should return 201', async () => {
-
+    const token = await supertest(web)
+      .post('/auth/token')
+      .set("Authorization", `Basic ${CleaningTest.TEMPLATE_UUID[0]}:${CleaningTest.TEMPLATE_UUID[1]}`)
+    
     const response = await supertest(web).post('/transaction')
       .send({
         "transaction_type": "DEBIT",
@@ -28,7 +31,7 @@ describe('POST /transaction', () => {
         },
         "account_id": "123456"
       })
-      .set('Cookie', ['token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNmNhMTg0MDYtNjI5Yy00ZWQ0LThlMjYtOWZmMzM4MDQxZGZlIiwiaWF0IjoxNzE0ODg1OTgwLCJleHAiOjE3MTQ4OTMxODB9.ibsw9-C3MZT6i9Zg8UAhNHGQ9mZsYoDc9GenuS5w3jI; Max-Age=7; Path=/; Expires=Sun, 05 May 2024 05:13:08 GMT; HttpOnly'])
+      .set('Cookie', token.header["set-cookie"])
       
     console.log(response.body);
     expect(response.status).toBe(201);

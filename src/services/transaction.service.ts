@@ -12,7 +12,7 @@ export class TransactionService {
     const client_id = await TokenService.verify(token);
 
     if(!client_id) {
-      throw new ResponseError(401, "Unauthorized: Invalid Token due to expired or invalid token");
+      throw new ResponseError(401, "Unauthorized: Invalid Token due to expired, invalid token not exists in auth");
     }
 
     const account = await prismaClient.account.findFirst({

@@ -4,7 +4,7 @@ import { prismaClient } from "../src/app/database";
 export class CleaningTest {
 
   static TEMPLATE_UUID = [
-    "6ca18406-629c-4ed4-8e26-9ff338041dfe",
+    "6ca18406-629c-4ed4-9e26-9ff338041dfe",
     "6ca18406-629c-4ed4-8e26-9ff338041dfd",
     "6ca18406-629c-4ed4-8e26-9ff338041efe",
     "6ca18406-629c-4ed4-8e26-9ff338041dff",
@@ -19,63 +19,120 @@ export class CleaningTest {
   static async delete() {
 
     // Delete Transaction
-    await prismaClient.transaction.deleteMany({
+    const transactionsExist = await prismaClient.transaction.findMany({
       where: {
         account_id: {
-          in: [
-            "123456",
-            "08123456789"
-          ]
-        }
-      }
-    });
- 
-    // Delete Account
-    await prismaClient.account.deleteMany({
-      where: {
-        account_id: {
-          in: [
-            "123456",
-            "08123456789"
-          ]
+          in: ["123456", "08123456789"]
         }
       }
     });
 
-    // Delete Merchant
-    await prismaClient.merchant.deleteMany({
-      where: {
-        merchant_id: {
-          in: [
-            this.TEMPLATE_UUID[3],
-            this.TEMPLATE_UUID[4]
-          ]
+    if (transactionsExist.length > 0) {
+      await prismaClient.transaction.deleteMany({
+        where: {
+          account_id: {
+            in: ["123456", "08123456789"]
+          }
         }
-      }
-    });
-
-    // Delete Wallet
-    await prismaClient.wallet.deleteMany({
-      where: {
-        wallet_id: {
-          in: [
-            this.TEMPLATE_UUID[5],
-            this.TEMPLATE_UUID[6]
-          ]
-        }
-      }
-    });
+      });
+    }
 
     // Delete Auth
-    await prismaClient.auth.delete({
+    const authExists = await prismaClient.auth.findUnique({
       where: {
         client_id: this.TEMPLATE_UUID[0]
       }
     });
 
+    if (authExists) {
+      await prismaClient.auth.delete({
+        where: {
+          client_id: this.TEMPLATE_UUID[0]
+        }
+      });
+    }
+    
+    // Delete Account
+    const accountsExist = await prismaClient.account.findMany({
+      where: {
+        account_id: {
+          in: ["123456", "08123456789"]
+        }
+      }
+    });
+
+    if (accountsExist.length > 0) {
+      await prismaClient.account.deleteMany({
+        where: {
+          account_id: {
+            in: ["123456", "08123456789"]
+          }
+        }
+      });
+    }
+
+    // Delete Merchant
+    const merchantsExist = await prismaClient.merchant.findMany({
+      where: {
+        merchant_id: {
+          in: [this.TEMPLATE_UUID[3], this.TEMPLATE_UUID[4]]
+        }
+      }
+    });
+
+    if (merchantsExist.length > 0) {
+      await prismaClient.merchant.deleteMany({
+        where: {
+          merchant_id: {
+            in: [this.TEMPLATE_UUID[3], this.TEMPLATE_UUID[4]]
+          }
+        }
+      });
+    }
+
+    // Delete Wallet
+    const walletsExist = await prismaClient.wallet.findMany({
+      where: {
+        wallet_id: {
+          in: [this.TEMPLATE_UUID[5], this.TEMPLATE_UUID[6]]
+        }
+      }
+    });
+
+    if (walletsExist.length > 0) {
+      await prismaClient.wallet.deleteMany({
+        where: {
+          wallet_id: {
+            in: [this.TEMPLATE_UUID[5], this.TEMPLATE_UUID[6]]
+          }
+        }
+      });
+    }
+
+  }
+
+  static async deleteAll() {
+    await prismaClient.transaction.deleteMany();
+    await prismaClient.auth.deleteMany();
+    await prismaClient.account.deleteMany();
+    await prismaClient.merchant.deleteMany();
+    await prismaClient.wallet.deleteMany();
   }
 
   static async insert() {
+
+    // Insert Auth
+    await prismaClient.auth.create({
+      data: {
+        client_id: this.TEMPLATE_UUID[0],
+        client_secret: this.TEMPLATE_UUID[1],
+        apps_name: "Meja Belajar",
+        is_active: true,
+        updated_at: new Date(),
+        created_by: "Meja Belajar",
+        updated_by: "Meja Belajar"
+      }
+    });
 
     // Insert Merchant
     await prismaClient.merchant.createMany({
@@ -137,19 +194,6 @@ export class CleaningTest {
       skipDuplicates: true
     });
 
-    // Insert Auth
-    await prismaClient.auth.create({
-      data: {
-        client_id: this.TEMPLATE_UUID[0],
-        client_secret: this.TEMPLATE_UUID[1],
-        apps_name: "Meja Belajar",
-        is_active: true,
-        updated_at: new Date(),
-        created_by: "Meja Belajar",
-        updated_by: "Meja Belajar"
-      }
-    });
-
     // Insert Account
     await prismaClient.account.createMany({
       data: [
@@ -179,16 +223,6 @@ export class CleaningTest {
       skipDuplicates: true
     });
  
-  }
-
-  static async cleaningBefore() {
-    Cookies.remove("token");
-    await this.insert();
-  }
-
-  static async cleaningAfter() {
-    Cookies.remove("token");
-    await this.delete();
   }
 
 }

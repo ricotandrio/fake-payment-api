@@ -4,13 +4,13 @@ import { web } from "../src/app/web";
 import Cookies from "js-cookie";
 
 describe("POST /auth/token", () => {
-  beforeEach(async () => {
-    await CleaningTest.cleaningBefore();
+  beforeAll(async () => {
+    await CleaningTest.insert();
   });
   
-  afterEach(async () => {
+  afterAll(async () => {
     Cookies.remove("token");
-    await CleaningTest.cleaningAfter();
+    await CleaningTest.delete();
   });
 
   it('should return 200 OK', async () => {
@@ -18,11 +18,9 @@ describe("POST /auth/token", () => {
     const response = await supertest(web)
       .post('/auth/token')
       .set("Authorization", `Basic ${CleaningTest.TEMPLATE_UUID[0]}:${CleaningTest.TEMPLATE_UUID[1]}`)
-      .send({
-        user_id: CleaningTest.TEMPLATE_UUID[2],
-      });
-    
+
     expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("token");
     expect(response.header["set-cookie"]).toBeDefined();
   });
 
@@ -30,12 +28,8 @@ describe("POST /auth/token", () => {
     const response = await supertest(web)
     .post('/auth/token')
     .set("Authorization", `Basic invalid_client_id:${CleaningTest.TEMPLATE_UUID[1]}`)
-    .send({
-      user_id: CleaningTest.TEMPLATE_UUID[2],
-    });
   
     expect(response.status).toBe(401);
     expect(response.header["set-cookie"]).toBeUndefined();
   })
-
 });
