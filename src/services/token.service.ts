@@ -26,34 +26,4 @@ export class TokenService {
 
     return token;
   }
-
-  static async verify(token: string): Promise<string> {
-    const decoded = jwt.verify(token, JWT_SECRET!) as { client_id: string, exp: number };
-
-    if(!decoded) {
-      return "";
-    }
-
-    const auth = await prismaClient.auth.findFirst({
-      where: {
-        client_id: decoded.client_id
-      }
-    });
-
-    if(!auth) {
-      return "";
-    }
-    
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    if(decoded.exp < currentTime) {
-      return "";
-    }
-
-    return decoded.client_id;
-  }
-
-  static async clearCookie(res: Response): Promise<void> {
-    res.clearCookie("token");
-  }
 }
