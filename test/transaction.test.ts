@@ -2,6 +2,7 @@ import supertest from "supertest";
 import { UtilTest } from "./test-util";
 import { web } from "../src/app/web";
 import Cookies from "js-cookie";
+import { logger } from "../src/app/logging";
 
 describe('POST /transaction', () => {
   beforeEach(async () => {
@@ -9,15 +10,17 @@ describe('POST /transaction', () => {
   });
   
   afterEach(async () => {
-    Cookies.remove("token");
-    await UtilTest.delete();
+    await UtilTest.deleteAll();
   });
 
   it('should return 201', async () => {
-    const token = await supertest(web)
+    const token_request = await supertest(web)
       .post('/auth/token')
-      .set("Authorization", `Basic ${UtilTest.TEMPLATE_UUID[0]}:${UtilTest.TEMPLATE_UUID[1]}`)
+      .set("Authorization", `Basic ${UtilTest.TEMPLATE_UUID[0]}:${UtilTest.TEMPLATE_UUID[1]}`);
     
+    const token = token_request.body.token;
+    logger.debug(token);
+
     const response = await supertest(web).post('/transaction')
       .send({
         "transaction_type": "DEBIT",
@@ -31,9 +34,10 @@ describe('POST /transaction', () => {
         },
         "account_id": "123456"
       })
-      .set('Cookie', token.header["set-cookie"])
-      
-    console.log(response.body);
+      .set('Authorization', `Bearer ${token}`);
+
+
+    logger.debug(response.body.message);
     expect(response.status).toBe(201);
   });
 

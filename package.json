@@ -1,5 +1,5 @@
 {
-  "name": "fake-payment-gateway-api",
+  "name": "fake-payment-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

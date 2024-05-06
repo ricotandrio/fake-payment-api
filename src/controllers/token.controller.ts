@@ -10,14 +10,14 @@ export class TokenController {
       const authorization = req.headers['authorization'];
 
       if(!authorization || !authorization.startsWith("Basic ")) {
-        throw new ResponseError(401, "Unauthorized");
+        throw new ResponseError(401, "Unauthorized: Client_ID and Client_Secret is required");
       }
 
-      const response = await TokenService.get(authorization, res);
+      const response = await TokenService.get(authorization);
 
       res.status(200).json({ 
         code: 200,
-        message: "Success",
+        message: "Success: Token is generated",
         token: response
       } as BaseResponse);
       

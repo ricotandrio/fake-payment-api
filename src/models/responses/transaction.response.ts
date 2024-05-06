@@ -1,4 +1,5 @@
-import { TransactionStatus, TransactionType } from "../database/transaction";
+import { Merchant } from "@prisma/client";
+import { Transaction, TransactionStatus, TransactionType } from "../database/transaction";
 import { BaseResponse } from "./base.response";
 
 export interface TransactionDTO {
@@ -32,3 +33,23 @@ export interface UpdateTransactionSuccessResponse extends BaseResponse {
 
 export interface UpdateTransactionFailedResponse extends BaseResponse {}
 
+export const toTransactionDTO = (transaction: Transaction, merchant: Merchant): TransactionDTO => {
+  return {
+    transaction_id: transaction.transaction_id,
+    transaction_type: transaction.transaction_type as TransactionType,
+    transaction_date: transaction.transaction_date,
+    transaction_amount: transaction.transaction_amount,
+    transaction_status: transaction.transaction_status as TransactionStatus,
+    transaction_note: transaction.transaction_note || "",
+    payment_url: `${merchant.redirect_url}/${transaction.transaction_id}`,
+    user_id: transaction.user_id,
+    merchant: {
+      merchant_id: merchant.merchant_id,
+      merchant_name: merchant.merchant_name,
+      merchant_email: merchant.merchant_email,
+      merchant_phone: merchant.merchant_phone,
+      merchant_address: merchant.merchant_address,
+      merchant_website: merchant.merchant_website,
+    }
+  };
+}
