@@ -10,6 +10,9 @@ authRoute.use(authMiddleware);
 
 // Transaction
 authRoute.post('/transaction', TransactionController.create);
+authRoute.get('/transaction/:transaction_id', TransactionController.get);
+authRoute.get('/transactions/:client_id', TransactionController.getAll);
+authRoute.get('/transactions/qr/:transaction_id', TransactionController.toQRCode);
 
 // Application
 authRoute.get('/app/:client_id/:client_secret', AuthController.get);

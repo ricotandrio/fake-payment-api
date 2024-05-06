@@ -6,6 +6,8 @@ import { toAuthDTO } from "../models/responses/auth.response";
 import { BaseResponse } from "../models/responses/base.response";
 
 export const authMiddleware = async (req: Request, res:Response, next: NextFunction) => {
+  console.log(`[Middleware] Authenticating... [${req.url}] [${req.method}] [${req.ip}]`);
+
   const { authorization } = req.headers;
 
   if(!authorization) {

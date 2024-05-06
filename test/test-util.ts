@@ -121,16 +121,16 @@ export class UtilTest {
   static async insert() {
 
     // Insert Auth
-    this.createAuth();
+    await this.createAuth();
 
     // Insert Merchant
-    this.createMerchant();
+    await this.createMerchant();
 
     // Insert Wallet
-    this.createWallet();
+    await this.createWallet();
 
     // Insert Account
-    this.createAccount(); 
+    await this.createAccount(); 
   }
 
   static async createAuth() {

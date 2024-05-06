@@ -1,10 +1,7 @@
 import { web } from "./app/web";
-import dotenv from 'dotenv';
 
-dotenv.config();
-const PORT = process.env.PORT;
-export const JWT_SECRET = process.env.JWT_SECRET;
-
-web.listen(PORT, () => {
-  console.log(`Server is running on port ${web.get('port')}`);
+web.listen(3000, () => {
+  console.log('Fake Payment API is running...');
+  console.log('Booting server...');
+  console.log(`Server is running on http://localhost:3000`);
 });
