@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { prismaClient } from "../app/database";
 import { JWT_SECRET } from "../app/web";
 import jwt from "jsonwebtoken";
-import { toCreateAuthDTO } from "../models/responses/auth.response";
+import { toAuthDTO } from "../models/responses/auth.response";
 import { BaseResponse } from "../models/responses/base.response";
 
 export const authMiddleware = async (req: Request, res:Response, next: NextFunction) => {
@@ -55,7 +55,7 @@ export const authMiddleware = async (req: Request, res:Response, next: NextFunct
     } as BaseResponse).end();
   }
   
-  res.locals.authorization = toCreateAuthDTO(auth!);
+  res.locals.authorization = toAuthDTO(auth!);
 
   next();
 }

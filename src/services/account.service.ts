@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
 import { prismaClient } from "../app/database";
-import { CreateAccountRequest } from "../models/requests/account.merchant";
+import { CreateAccountRequest } from "../models/requests/account.request";
 import { AccountDTO, toAccountDTO } from "../models/responses/account.response";
 import { ResponseError } from "../utils/error/response.error";
 import { Validation } from "../utils/validation/validation";
@@ -8,6 +8,7 @@ import { AccountValidation } from "../utils/validation/account.validation";
 import { Account } from "../models/database/account";
 import { Wallet } from "../models/database/wallet";
 import { Merchant } from "../models/database/merchant";
+import { logger } from "../app/logging";
 
 export class AccountService {
   static async create(request: CreateAccountRequest): Promise<AccountDTO> {
@@ -19,41 +20,43 @@ export class AccountService {
         merchant_id: accountRequest.merchant_id
       }
     }) as Merchant;
+
     
     if(!merchant) {
       throw new ResponseError(404 ,"Error: Merchant not found");
     }
     
-    const id = v4();
-
-    const account: Account = await prismaClient.account.create({
-      data: {
-        account_id: id,
-        account_name: accountRequest.account_name,
-        account_type: accountRequest.account_type,
-        wallet_id: id,
-        merchant_id: accountRequest.merchant_id,
-        is_active: true,
-        updated_at: new Date(),
-        created_by: id,
-        updated_by: id
-      }
-    }) as Account;
+    const id_wallet = v4();
 
     const wallet: Wallet = await prismaClient.wallet.create({
       data: {
-        wallet_id: id,
+        wallet_id: id_wallet,
         wallet_name: accountRequest.wallet_name,
         wallet_balance: 0,
         is_active: true,
         updated_at: new Date(),
-        created_by: id,
-        updated_by: id
+        created_by: id_wallet,
+        updated_by: id_wallet
       }
     }) as Wallet;
 
-    return toAccountDTO(account, merchant, wallet);
+    const id_account = v4();
 
+    const account: Account = await prismaClient.account.create({
+      data: {
+        account_id: id_account,
+        account_name: accountRequest.account_name,
+        account_type: accountRequest.account_type,
+        wallet_id: id_wallet,
+        merchant_id: accountRequest.merchant_id,
+        is_active: true,
+        updated_at: new Date(),
+        created_by: id_account,
+        updated_by: id_account
+      }
+    }) as Account;
+
+    return toAccountDTO(account, merchant, wallet);
   }
 
   static async get(accountId: string): Promise<AccountDTO> {

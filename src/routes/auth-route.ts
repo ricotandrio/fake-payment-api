@@ -15,11 +15,11 @@ authRoute.post('/transaction', TransactionController.create);
 authRoute.get('/app/:client_id/:client_secret', AuthController.get);
 
 // Merchant
-authRoute.post('/merchant', MerchantController.create);
-authRoute.put('/merchant', MerchantController.update);
+authRoute.post('/merchant/create', MerchantController.create);
+authRoute.put('/merchant/update', MerchantController.update);
 authRoute.get('/merchant/:merchant_id', MerchantController.get);
 authRoute.get('/merchants', MerchantController.getAll);
-authRoute.delete('/merchant/:merchant_id', MerchantController.delete);
+authRoute.delete('/merchant/delete/:merchant_id', MerchantController.delete);
 
 // Account
 authRoute.post('/account', AccountController.create);
