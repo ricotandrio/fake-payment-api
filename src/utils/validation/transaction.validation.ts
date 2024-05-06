@@ -1,21 +1,22 @@
-import { z } from 'zod';
-import { CreateTransactionRequest } from '../../models/requests/transaction.request';
+import { ZodType, z } from "zod";
 
-const createTransactionZod = z.object({
-  payment_type: z.string().min(1),
-  transaction_detail: z.object({
-    order_id: z.string().min(1),
-    amount: z.number().min(1)
-  }),
-  customer_detail: z.object({
-    customer_id: z.string().min(1),
-    customer_name: z.string().min(1),
-    customer_email: z.string().email(),
-    customer_phone: z.string().regex(/^[0-9]+$/)
-  }), 
-  token: z.string().min(1)
-});
+export class TransactionValidation {
+  static readonly CREATE: ZodType = z.object({
+    transaction_type: z.string().min(1).max(255),
+    transaction_date: z.string(),
+    transaction_amount: z.number().positive(),
+    transaction_note: z.string().optional(),
+    user: z.object({
+      user_id: z.string().min(1).max(255),
+      user_email: z.string().email(),
+      user_name: z.string().min(1).max(255),
+    }),
+    account_id: z.string().min(1).max(255),
+  });
 
-export const validateCreateTransaction = (data: CreateTransactionRequest) => {
-  return createTransactionZod.safeParse(data);
+  static readonly UPDATE: ZodType = z.object({
+    transaction_id: z.string().min(1).max(255),
+    status: z.string().min(1).max(255),
+  });
+
 }

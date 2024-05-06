@@ -2,41 +2,42 @@ import { v4 } from "uuid";
 import { prismaClient } from "../app/database";
 import { CreateTransactionRequest, UpdateTransactionRequest } from "../models/requests/transaction.request";
 import { ResponseError } from "../utils/error/response.error";
-import { TokenService } from "./token.service";
-import { TransactionStatus, TransactionType } from "../models/database/transaction";
-import { TransactionDTO } from "../models/responses/transaction.response";
+import { Transaction, TransactionStatus, TransactionType } from "../models/database/transaction";
+import { toTransactionDTO, TransactionDTO } from "../models/responses/transaction.response";
+import { Merchant } from "../models/database/merchant";
+import { Wallet } from "../models/database/wallet";
+import { Account } from "../models/database/account";
+import { CreateAuthDTO } from "../models/responses/auth.response";
+import { Validation } from "../utils/validation/validation";
+import { TransactionValidation } from "../utils/validation/transaction.validation";
 
 export class TransactionService {
 
-  static async create(request: CreateTransactionRequest, token: string): Promise<TransactionDTO> {
-    const client_id = await TokenService.verify(token);
+  static async create(request: CreateTransactionRequest, client: CreateAuthDTO): Promise<TransactionDTO> {
+    const transactionRequest = Validation.validate(TransactionValidation.CREATE, request);
 
-    if(!client_id) {
-      throw new ResponseError(401, "Unauthorized: Invalid Token due to expired, invalid token not exists in auth");
-    }
-
-    const account = await prismaClient.account.findFirst({
+    const account: Account = await prismaClient.account.findFirst({
       where: {
-        account_id: request.account_id
+        account_id: transactionRequest.account_id
       }
-    });
+    }) as Account;
 
     if(!account) {
       throw new ResponseError(404, "Error: Account not found");
     }
 
-    const wallet = await prismaClient.wallet.findFirst({
+    const wallet: Wallet = await prismaClient.wallet.findFirst({
       where: {
         wallet_id: account.wallet_id
       }
-    });
+    }) as Wallet;
 
     if(!wallet) {
       throw new ResponseError(404, "Error: Wallet not found");
     }
 
-    if((request.transaction_type === TransactionType.DEBIT || request.transaction_type === TransactionType.TRANSFER) 
-      && wallet.wallet_balance < request.transaction_amount
+    if((transactionRequest.transaction_type === TransactionType.DEBIT || transactionRequest.transaction_type === TransactionType.TRANSFER) 
+      && wallet.wallet_balance < transactionRequest.transaction_amount
     ) {
       throw new ResponseError(400, "Error: Insufficient balance");
     }
@@ -46,7 +47,7 @@ export class TransactionService {
         wallet_id: wallet.wallet_id
       },
       data: {
-        wallet_balance: wallet.wallet_balance - request.transaction_amount
+        wallet_balance: wallet.wallet_balance - transactionRequest.transaction_amount
       }
     });
 
@@ -54,11 +55,11 @@ export class TransactionService {
       throw new ResponseError(400, "Error: Failed to make payment");
     }
 
-    const merchant = await prismaClient.merchant.findFirst({
+    const merchant: Merchant = await prismaClient.merchant.findFirst({
       where: {
         merchant_id: account.merchant_id
       }
-    });
+    }) as Merchant;
 
     if(!merchant) {
       throw new ResponseError(404, "Error: Merchant not found");
@@ -66,74 +67,61 @@ export class TransactionService {
 
     const id = v4();
 
-    const transaction = await prismaClient.transaction.create({
+    const transaction: Transaction = await prismaClient.transaction.create({
       data: {
         transaction_id: id,
-        transaction_type: request.transaction_type,
-        transaction_date: request.transaction_date,
-        transaction_amount: request.transaction_amount,
+        transaction_type: transactionRequest.transaction_type,
+        transaction_date: transactionRequest.transaction_date,
+        transaction_amount: transactionRequest.transaction_amount,
         transaction_status: TransactionStatus.PENDING,
-        transaction_note: request.transaction_note,
-        user_id: request.user.user_id,
+        transaction_note: transactionRequest.transaction_note,
+        user_id: transactionRequest.user.user_id,
         is_active: true,
         updated_at: new Date(),
-        created_by: request.user.user_id,
-        updated_by: request.user.user_id,
-        account_id: request.account_id,
-        client_id: client_id
+        created_by: transactionRequest.user.user_id,
+        updated_by: transactionRequest.user.user_id,
+        account_id: transactionRequest.account_id,
+        client_id: client.client_id
       }
-    });
+    }) as Transaction;
 
-    return {
-      transaction_id: transaction.transaction_id,
-      transaction_type: transaction.transaction_type as TransactionType,
-      transaction_date: transaction.transaction_date,
-      transaction_amount: transaction.transaction_amount,
-      transaction_status: transaction.transaction_status as TransactionStatus,
-      transaction_note: transaction.transaction_note || "",
-      payment_url: `merchant.redirect_url/${transaction.transaction_id}`,
-      user_id: transaction.user_id,
-      merchant: {
-        merchant_id: merchant.merchant_id,
-        merchant_name: merchant.merchant_name,
-        merchant_email: merchant.merchant_email,
-        merchant_phone: merchant.merchant_phone,
-        merchant_address: merchant.merchant_address,
-        merchant_website: merchant.merchant_website,
-      }
-    } as TransactionDTO;
+
+    return toTransactionDTO(transaction, merchant);
   }
 
   static async update(request: UpdateTransactionRequest): Promise<TransactionDTO> {
-    const transaction = await prismaClient.transaction.update({
+
+    const transactionRequest = Validation.validate(TransactionValidation.UPDATE, request);
+
+    const transaction: Transaction = await prismaClient.transaction.update({
       where: {
-        transaction_id: request.transaction_id
+        transaction_id: transactionRequest.transaction_id
       },
       data: {
-        transaction_status: request.status,
+        transaction_status: transactionRequest.status,
         updated_at: new Date()
       }
-    });
+    }) as Transaction;
 
     if(!transaction) {
       throw new ResponseError(400, "Error: Failed to update transaction");
     }
 
-    const account = await prismaClient.account.findFirst({
+    const account: Account = await prismaClient.account.findFirst({
       where: {
         account_id: transaction.account_id
       }
-    });
+    }) as Account;
 
     if(!account) {
       throw new ResponseError(404, "Error: Account not found");
     }
 
-    const wallet = await prismaClient.wallet.findFirst({
+    const wallet: Wallet = await prismaClient.wallet.findFirst({
       where: {
         wallet_id: account.wallet_id
       }
-    });
+    }) as Wallet;
 
     if(!wallet) {
       throw new ResponseError(404, "Error: Wallet not found");
@@ -150,33 +138,16 @@ export class TransactionService {
       });
     }
 
-    const merchant = await prismaClient.merchant.findFirst({
+    const merchant: Merchant = await prismaClient.merchant.findFirst({
       where: {
         merchant_id: account.merchant_id
       }
-    });
+    }) as Merchant;
 
     if(!merchant) {
       throw new ResponseError(404, "Error: Merchant not found");
     }
 
-    return {
-      transaction_id: transaction.transaction_id,
-      transaction_type: transaction.transaction_type as TransactionType,
-      transaction_date: transaction.transaction_date,
-      transaction_amount: transaction.transaction_amount,
-      transaction_status: transaction.transaction_status as TransactionStatus,
-      transaction_note: transaction.transaction_note || "",
-      payment_url: `merchant.redirect_url/${transaction.transaction_id}`,
-      user_id: transaction.user_id,
-      merchant: {
-        merchant_id: merchant.merchant_id,
-        merchant_name: merchant.merchant_name,
-        merchant_email: merchant.merchant_email,
-        merchant_phone: merchant.merchant_phone,
-        merchant_address: merchant.merchant_address,
-        merchant_website: merchant.merchant_website,
-      }
-    } as TransactionDTO;
+    return toTransactionDTO(transaction, merchant);
   }
 }

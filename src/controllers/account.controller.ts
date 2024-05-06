@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateAccountRequest } from "../models/requests/account.merchant";
+import { CreateAccountRequest } from "../models/requests/account.request";
 import { AccountService } from "../services/account.service";
 import { CreateAccountSuccessResponse } from "../models/responses/account.response";
 

@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { prismaClient } from "../src/app/database";
 
 export class UtilTest {
@@ -128,59 +127,10 @@ export class UtilTest {
     this.createMerchant();
 
     // Insert Wallet
-    await prismaClient.wallet.createMany({
-      data: [
-        {
-          wallet_id: this.TEMPLATE_UUID[5],
-          wallet_name: "Digital Bank Account",
-          wallet_balance: 1000000,
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Digital Bank",
-          updated_by: "Digital Bank"
-        },
-        {
-          wallet_id: this.TEMPLATE_UUID[6],
-          wallet_name: "Tech Solutions eWallet",
-          wallet_balance: 500000,
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Tech Solutions",
-          updated_by: "Tech Solutions"
-        }
-      ],
-      skipDuplicates: true
-    });
+    this.createWallet();
 
     // Insert Account
-    await prismaClient.account.createMany({
-      data: [
-        {
-          account_id: "123456",
-          account_name: "Digital Bank Account",
-          account_type: "BANK",
-          merchant_id: this.TEMPLATE_UUID[3],
-          wallet_id: this.TEMPLATE_UUID[5],
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Digital Bank",
-          updated_by: "Digital Bank"
-        },
-        {
-          account_id: "08123456789",
-          account_name: "Tech Solutions e-Wallet",
-          account_type: "EWALLET",
-          merchant_id: this.TEMPLATE_UUID[4],
-          wallet_id: this.TEMPLATE_UUID[6],
-          is_active: true,
-          updated_at: new Date(),
-          created_by: "Tech Solutions",
-          updated_by: "Tech Solutions"
-        }
-      ],
-      skipDuplicates: true
-    });
- 
+    this.createAccount(); 
   }
 
   static async createAuth() {
@@ -232,4 +182,61 @@ export class UtilTest {
       skipDuplicates: true
     });
   }
+
+  static async createWallet() {
+    await prismaClient.wallet.createMany({
+      data: [
+        {
+          wallet_id: this.TEMPLATE_UUID[5],
+          wallet_name: "Digital Bank Account",
+          wallet_balance: 1000000,
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Digital Bank",
+          updated_by: "Digital Bank"
+        },
+        {
+          wallet_id: this.TEMPLATE_UUID[6],
+          wallet_name: "Tech Solutions eWallet",
+          wallet_balance: 500000,
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Tech Solutions",
+          updated_by: "Tech Solutions"
+        }
+      ],
+      skipDuplicates: true
+    });
+  }
+
+  static async createAccount() {
+    await prismaClient.account.createMany({
+      data: [
+        {
+          account_id: "123456",
+          account_name: "Digital Bank Account",
+          account_type: "BANK",
+          merchant_id: this.TEMPLATE_UUID[3],
+          wallet_id: this.TEMPLATE_UUID[5],
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Digital Bank",
+          updated_by: "Digital Bank"
+        },
+        {
+          account_id: "08123456789",
+          account_name: "Tech Solutions e-Wallet",
+          account_type: "EWALLET",
+          merchant_id: this.TEMPLATE_UUID[4],
+          wallet_id: this.TEMPLATE_UUID[6],
+          is_active: true,
+          updated_at: new Date(),
+          created_by: "Tech Solutions",
+          updated_by: "Tech Solutions"
+        }
+      ],
+      skipDuplicates: true
+    });
+  }
+
 }

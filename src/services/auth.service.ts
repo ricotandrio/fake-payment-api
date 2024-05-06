@@ -1,12 +1,16 @@
 import { v4 } from "uuid";
 import { CreateAuthRequest } from "../models/requests/auth.request";
-import { CreateAuthDTO } from "../models/responses/auth.response";
+import { AuthDTO, toAuthDTO } from "../models/responses/auth.response";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../utils/error/response.error";
+import { Validation } from "../utils/validation/validation";
+import { AuthValidation } from "../utils/validation/auth.validation";
 
 export class AuthService {
 
-  static async create(request: CreateAuthRequest): Promise<CreateAuthDTO> {
+  static async create(request: CreateAuthRequest): Promise<AuthDTO> {
+    const authRequest = Validation.validate(AuthValidation.CREATE, request);
+
     const id = v4();
     const secret = v4();
 
@@ -14,7 +18,7 @@ export class AuthService {
       data: {
         client_id: id,
         client_secret: secret,
-        apps_name: request.apps_name,
+        apps_name: authRequest.apps_name,
         is_active: true,
         updated_at: new Date(),
         created_by: id,
@@ -22,14 +26,10 @@ export class AuthService {
       }
     });
 
-    return {
-      client_id: auth.client_id,
-      client_secret: auth.client_secret,
-      apps_name: auth.apps_name
-    } as CreateAuthDTO;
+    return toAuthDTO(auth);
   }
 
-  static async get(client_id: string, client_secret: string): Promise<CreateAuthDTO> {
+  static async get(client_id: string, client_secret: string): Promise<AuthDTO> {
     const auth = await prismaClient.auth.findFirst({
       where: {
         client_id: client_id,
@@ -41,10 +41,6 @@ export class AuthService {
       throw new ResponseError(404, "Error: Auth not found");
     }
 
-    return {
-      client_id: auth.client_id,
-      client_secret: auth.client_secret,
-      apps_name: auth.apps_name
-    } as CreateAuthDTO;
+    return toAuthDTO(auth);
   }
 }
