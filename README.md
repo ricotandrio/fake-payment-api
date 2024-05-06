@@ -1,26 +1,14 @@
 # Fake Payment API
 
-The Fake Payment API provides fake payment information for **application prototyping purposes**. This API enables the generation of QR code payments.
+The Fake Payment API offers fake payment information for **application prototyping purposes**. This API facilitates the generation of QR code payments. This project is a part of my learning journey in Backend Development with Typescript and Express.js, including API development, secure API authentication, and API documentation processes.
 
-Explore the [documentation](https://github.com/ricotandrio/fake-payment-gateway-api/blob/master/docs) for detailed information on each endpoint.
+Explore the [documentation](https://github.com/ricotandrio/fake-payment-gateway-api/blob/master/docs) for detailed information on each endpoint and the Database ERD.
 
 ## API Installation
 To run this API on your local machine, you will need several things. Please make sure to follow each step provided.
 
 ### Prerequisites
-
-<div style="clear: both;">
-  <a href="https://www.mysql.com/" target="_blank" style="float: left; margin-right: 10px;">
-    <img src="https://profilinator.rishav.dev/skills-assets/mysql-original-wordmark.svg" alt="MySQL" height="35" />
-  </a>
-
-  <a href="https://nodejs.org/" target="_blank" style="float: left; margin-right: 10px;">
-    <img src="https://profilinator.rishav.dev/skills-assets/nodejs-original-wordmark.svg" alt="Node.js" height="50" />
-  </a>
-</div>
-
-<br/>
-<br/>
+`MySQL`, `Node.js`, and `Git`
 
 ### Installation
 
@@ -59,7 +47,6 @@ npm run start
 ```
 
 ### Testing
-![alt text](public/readme-img/test-unit.png)
 
 To run Jest unit tests with a specific test file, replace `--pathToTestFile` with the path of the test file.
 
@@ -72,4 +59,3 @@ Alternatively, you can run all unit tests by using:
 ```bash
 npm test
 ```
-

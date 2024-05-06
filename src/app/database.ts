@@ -34,11 +34,11 @@ prismaClient.$on("warn", (e) => {
 })
 
 // @ts-ignore
-// prismaClient.$on("info", (e) => {
-//   logger.info(e);
-// })
+prismaClient.$on("info", (e) => {
+  logger.info(e);
+})
 
 // @ts-ignore
-// prismaClient.$on("query", (e) => {
-//   logger.info(e);
-// })
+prismaClient.$on("query", (e) => {
+  logger.info(e);
+})

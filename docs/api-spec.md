@@ -3,7 +3,7 @@
 <!-- readme header  -->
 <div align="center">
   <p align="left">
-    <a href=""><strong>Explore the API Documentation »</strong></a>
+    <a href="https://documenter.getpostman.com/view/34411247/2sA3JJ82nT"><strong>Postman API Documentation</strong></a>
   </p>
 </div>
 
