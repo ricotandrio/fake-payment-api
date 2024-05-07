@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { logger } from "../app/logging";
 
 export const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  console.log(`[Middleware] CORS... [${req.url}] [${req.method}] [${req.ip}]`);
+  logger.info(`[Middleware] CORS... [${req.url}] [${req.method}] [${req.ip}]`);
   
   try {
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow requests from any origin

@@ -1,10 +1,11 @@
 import { Response, Request, NextFunction } from "express";
 import { ZodError } from "zod";
 import { ResponseError } from "../utils/error/response.error";
+import { logger } from "../app/logging";
 
 export const errorMiddleware = async (error: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(`[Middleware] Error... [${req.url}] [${req.method}] [${req.ip}]`);
-
+  logger.info(`[Middleware] Error... [${req.url}] [${req.method}] [${req.ip}]`);
+  
   if (error instanceof ZodError) {
     res.status(400).json({
       code: 400,
